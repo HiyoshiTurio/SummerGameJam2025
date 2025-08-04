@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Timer : MonoBehaviour
 {
+    [Header("カウントダウン画像"), SerializeField] private Image[] countdown;
     [Header("制限時間"),SerializeField]private int _limit = 100;
     [SerializeField]private TextMeshProUGUI _timerUI;
     private float _currentTime;//残り時間
