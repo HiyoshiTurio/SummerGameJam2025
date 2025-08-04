@@ -17,6 +17,9 @@ public class PlayerHandBehaviour : MonoBehaviour
     [SerializeField] [Tooltip("生成するアイテムのデータベース")]
     private DeliveryItemDatabase deliveryItemDatabase;
 
+    [SerializeField] [Tooltip("スコア管理のスクリプト")]
+    private Score scoreManager;
+
     private ItemType _currentItem = ItemType.None;
     private GameObject _holdingObject;
 
@@ -46,6 +49,7 @@ public class PlayerHandBehaviour : MonoBehaviour
             if (target.TryGetComponent(out ICustomer customer) && customer.Take(_currentItem))
             {
                 Debug.Log("アイテムを渡しました: " + _currentItem);
+                scoreManager.AddScore(100);
                 _currentItem = ItemType.None;
                 if (_holdingObject != null)
                 {
@@ -70,6 +74,7 @@ public class PlayerHandBehaviour : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (playerHand == null) return;
         var origin = transform.position;
         var direction = transform.forward;
         var distance = Vector3.Distance(origin, playerHand.position);
