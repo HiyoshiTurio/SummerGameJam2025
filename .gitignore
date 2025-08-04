@@ -104,3 +104,4 @@ Assets/Plugins/Editor/JetBrains*
 
 # MyIgnore
 /Assets/Private
+.vsconfig
