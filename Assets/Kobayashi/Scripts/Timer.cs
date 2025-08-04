@@ -1,17 +1,17 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Timer : MonoBehaviour
 {
+    [Header("カウントダウン画像"), SerializeField] private Image[] countdown;
     [Header("制限時間"),SerializeField]private int _limit = 100;
     [SerializeField]private TextMeshProUGUI _timerUI;
     private float _currentTime;//残り時間
-    public bool finish;
 
     // Start is called before the first frame update
     void Start()
     {
-        finish = false;
         //タイマーの初期化
         _currentTime = _limit + 1f;
         TimerTextUpdate();
@@ -27,7 +27,6 @@ public class Timer : MonoBehaviour
             if(_currentTime < 0)
             {
                 _currentTime = 0;
-                finish = true;
             }
             TimerTextUpdate();
         }
