@@ -6,33 +6,19 @@ using TMPro;
 public class Score : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _score;
-    [Header("得点の増加量"), SerializeField] private int _plusscore;
     private int _currentscore = 0;
-    Timer _timer;
  
-    // Start is called before the first frame update
     void Start()
     {
-        _timer = FindObjectOfType<Timer>();
         _score.text = _currentscore.ToString("000000");
     }
+
     /// <summary>
-    /// 得点が増える
+    /// 得点の更新
     /// </summary>
-    public void IncreaseScore()
+    void UpdateText(int score)
     {
-        _currentscore += _plusscore;
+        _currentscore = score;
         _score.text = _currentscore.ToString("000000");
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        if (!_timer.finish)
-        {
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                IncreaseScore();
-            }
-        }  
     }
 }

@@ -32,6 +32,7 @@ public class Timer : MonoBehaviour
             TimerTextUpdate();
         }
     }
+
     /// <summary>
     /// タイマーの更新
     /// </summary>
