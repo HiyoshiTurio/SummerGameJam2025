@@ -16,9 +16,9 @@ public class PlayerHandBehaviour : MonoBehaviour
     
     [SerializeField] [Tooltip("生成するアイテムのデータベース")]
     private DeliveryItemDatabase deliveryItemDatabase;
-
-    [SerializeField] [Tooltip("スコア管理のスクリプト")]
-    private Score scoreManager;
+    
+    [SerializeField]
+    private Player player;
 
     private ItemType _currentItem = ItemType.None;
     private GameObject _holdingObject;
@@ -49,7 +49,7 @@ public class PlayerHandBehaviour : MonoBehaviour
             if (target.TryGetComponent(out ICustomer customer) && customer.Take(_currentItem))
             {
                 Debug.Log("アイテムを渡しました: " + _currentItem);
-                scoreManager.AddScore(100);
+                GameManager.Instance.AddScore(100, player);
                 _currentItem = ItemType.None;
                 if (_holdingObject != null)
                 {
