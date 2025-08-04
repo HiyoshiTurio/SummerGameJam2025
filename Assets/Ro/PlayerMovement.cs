@@ -5,6 +5,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashSpeed = 10f;
     [SerializeField] private float dashDuration = 0.2f;
     [SerializeField] private float dashCooldown = 1.0f;
+    [SerializeField] private float turnSpeed = 360f;
     [SerializeField] private bool isPlayer1 = true;
     [SerializeField] private KeyCode dashKey = KeyCode.LeftShift;
 
@@ -87,13 +88,33 @@ public class PlayerMovement : MonoBehaviour
        
     }
 
-    
+
     /// 向いている方向を更新
     private void RotateToMoveDirection()
     {
+       
         if (moveDirection != Vector3.zero)
         {
-            transform.forward = moveDirection;
+            Vector3 current = transform.forward.normalized;  
+            Vector3 target = moveDirection.normalized;       
+
+            float dot = Vector3.Dot(current, target);        // 2つのベクトルの内積（角度の違いを見る）
+            dot = Mathf.Clamp(dot, -1f, 1f);                 
+
+            float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;   // 内積からラジアン角を得て、度数法に変換
+
+            // 一定角度以上でなければ回転しない（微小な角度変化は無視）
+            if (angle > 0.1f)
+            {
+                Vector3 cross = Vector3.Cross(current, target);     // 外積を使って、左右どちらに回転すべきかを判断
+                float direction = cross.y > 0 ? 1f : -1f;            
+
+                float maxStep = turnSpeed * Time.deltaTime;         // 1フレームで最大どれくらい回転できるか（回転速度）
+
+                float step = Mathf.Min(angle, maxStep) * direction; // 実際に回転する角度（angle が maxStep を超えないように）
+
+                transform.Rotate(0f, step, 0f);                      
+            }
         }
     }
 
