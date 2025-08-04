@@ -151,7 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   dashSpeed: 20
-  dashDuration: 0.2
+  dashDuration: 0.5
   dashCooldown: 1
   isPlayer1: 1
   dashKey: 107
