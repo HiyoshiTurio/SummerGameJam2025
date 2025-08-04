@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int _countdownTimer = 60;
     [SerializeField] private Text _scoreText;
     [SerializeField] private Text _timerText;
-    public event Action<Player, int> OnScoreChanged;
+    public event Action<Player, int, int> OnScoreChanged;
     public event Action<float> OnCountdownChanged;
     private float _countdownBuffer = 0f;
     public bool _stopTime;
@@ -138,8 +138,10 @@ public class GameManager : MonoBehaviour
     public void AddScore(int value, Player player)
     {
         //Score += value;
+        var beforeScore = _playerScore[player];
+        var afterScore = _playerScore[player] + value;
         _playerScore[player] += value;
-        OnScoreChanged?.Invoke(player, _playerScore[player]);
+        OnScoreChanged?.Invoke(player, beforeScore, afterScore);
     }
 }
 
