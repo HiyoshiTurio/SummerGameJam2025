@@ -19,13 +19,6 @@ public class Score : MonoBehaviour
     [SerializeField]
     private ScoreUIData[] scoreUIData;
     private Dictionary<Player, TextMeshProUGUI> _scoreUiDictionary = new();
-    
-    // 現在の得点を保持するための辞書
-    private readonly Dictionary<Player, int> _currentScore = new()
-    {
-        { Player.One, 0 },
-        { Player.Two, 0 }
-    };
  
     void Start()
     {
@@ -41,15 +34,13 @@ public class Score : MonoBehaviour
     /// <summary>
     /// 得点の更新
     /// </summary>
-    void UpdateText(Player player, int score)
+    void UpdateText(Player player, int before, int after)
     {
         var textUI = _scoreUiDictionary[player];
-        var beforeScore = _currentScore[player];
-        var afterScore = _currentScore[player] + score;
-        DOTween.To(() => beforeScore, value =>
-        {
+        DOTween.To(() => before, value =>
+        {   
             textUI.text = value.ToString("000000");
-        }, afterScore, 1f).SetEase(Ease.OutExpo);
+        }, after, 1f).SetEase(Ease.OutExpo);
         var defaultScale = textUI.transform.localScale;
         textUI.transform.localScale = defaultScale * 1.2f;
         textUI.transform.DOScale(defaultScale, 0.2f);
