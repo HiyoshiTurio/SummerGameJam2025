@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CustomerBehaviour : MonoBehaviour, ICustomer
 {
@@ -40,6 +42,7 @@ public class CustomerBehaviour : MonoBehaviour, ICustomer
             {
                 _eatingItem = Instantiate(itemPrefab, eatPosition.position, Quaternion.identity, eatPosition);
             }
+            SoundManager.Instance.Play(SoundKey.Okawari);
             StartCoroutine(Eat());
             return true;
         }
@@ -48,6 +51,7 @@ public class CustomerBehaviour : MonoBehaviour, ICustomer
         {
             Debug.Log("客が飲み物を受け取りました");
             _currentState = CustomerState.Idle;
+            SoundManager.Instance.Play(SoundKey.PutGruss);
             return true;
         }
 
@@ -81,5 +85,13 @@ public class CustomerBehaviour : MonoBehaviour, ICustomer
             _eatingItem = null;
         }
         _currentState = CustomerState.Idle;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (eatPosition == null) return;
+        
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(eatPosition.position, 0.5f);
     }
 }

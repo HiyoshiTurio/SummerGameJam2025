@@ -1,23 +1,19 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System;
-using System.Collections.Generic;
-using System.Net;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private float _gameTimer;
-    [SerializeField] private int _countdownTimer = 3;
-    [SerializeField] private Text _scoreText;
-    [SerializeField] private Text _timerText;
-    public event Action<Player, int, int> OnScoreChanged;
+    [SerializeField] private float _inGameTime = 60;
+    [SerializeField] private int _countdownTime = 3;
+    public event Action<Player, int> OnScoreChanged;
     public event Action<float> OnTimerChanged;
-    private float _countdownBuffer = 0f;
-    //private int _score = 0;// 他のクラスから取得
     private float _timer = 0;
     private gamestate _gamestate = gamestate.countdown;
-    private Dictionary<Player,int> _playerScore = new();
-    
+
+    private PlayerScore[] _playerScores = new[]
+    {
+        new PlayerScore(){Player = Player.One,Score = 0}, new PlayerScore(){Player = Player.Two,Score = 0}
+    };
     public static GameManager Instance { get; private set; }
     private float Timer
     {
@@ -39,8 +35,10 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        _playerScore[Player.One]  = 0;
-        _playerScore[Player.Two] = 0;
+        foreach (var VARIABLE in _playerScores)
+        {
+            VARIABLE.OnScoreChanged += OnScoreChanged;
+        }
     }
     
     private void Update()
@@ -63,12 +61,9 @@ public class GameManager : MonoBehaviour
                 {
                     Timer = 0;
                     TimerStop();
-                    Debug.Log("Finish Game");// シーン遷移先に書き替える
                 }
                 break;
             }
-            default:
-                throw new ArgumentOutOfRangeException();
         }
     }
     
@@ -78,41 +73,41 @@ public class GameManager : MonoBehaviour
         Timer = 60;
     }
     
-    void UpdateScoreText(int score)
-    {
-        _scoreText.text = score.ToString();
-    }
-    
     private void TimerStop()
     {
         Time.timeScale = 0;
     }
+
+    public void AddScore(int value, Player player) { _playerScores[(int)player].Score += value; }
+
+    public (int,int) GetScore()
+    {
+        return (_playerScores[0].Score, _playerScores[1].Score);
+    }
+}
+
+public class PlayerScore
+{
+    private int _score;
+    public Player Player;
     
-    public void TimeResume()
-    {
-        Time.timeScale = 0;
-    }
 
-    public void AddScore(int value, Player player)
+    public int Score
     {
-        //Score += value;
-        var beforeScore = _playerScore[player];
-        var afterScore = _playerScore[player] + value;
-        _playerScore[player] += value;
-        OnScoreChanged?.Invoke(player, beforeScore, afterScore);
+        get { return _score; }
+        set
+        {
+            _score = value;
+            OnScoreChanged?.Invoke(Player,value);
+        }
     }
-
-    public int GetScore(Player player)
-    {
-        return _playerScore[player];
-    }
+    public event Action<Player,int> OnScoreChanged;
 }
 
 enum gamestate
 {
     countdown,
     ingame,
-    
 }
 
 public enum Player

@@ -78,5 +78,6 @@ public enum SoundKey
     StartCountDown,
     TimeUp,
     Title,
-    FootStep,
+    FootStep1,
+    FootStep2,
 }
