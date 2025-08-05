@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager _instance;
     [SerializeField] private float _gameTimer;
     [SerializeField] private int _countdownTimer = 60;
     [SerializeField] private Text _scoreText;
@@ -17,36 +16,21 @@ public class GameManager : MonoBehaviour
     //private int _score = 0;// 他のクラスから取得
     private float _timer = 3;
     private gamestate _gamestate = gamestate.countdown;
-    private Dictionary<Player,int> _playerScore = new Dictionary<Player, int>();
+    private Dictionary<Player,int> _playerScore = new();
     
     public float GameTime => _gameTimer;
     
-    public static GameManager Instance
-    {
-        get
-        {
-            return _instance;
-        }
-        private set
-        {
-            _instance = value;
-        }
-    }
-    
-    
+    public static GameManager Instance { get; private set; }
+
     private void Awake()
     {
-        if (_instance == null)
-        {
-            _instance = this;
-        }
+        if (Instance == null)
+            Instance = this;
         else
-        {
             Destroy(gameObject);
-        }
     }
     
-    void Start()
+    private void Start()
     {
         // OnScoreChanged += UpdateScoreText;
         OnCountdownChanged += UpdateTimerText;
@@ -79,8 +63,10 @@ public class GameManager : MonoBehaviour
                 }
                 break;
             }
+            default:
+                throw new ArgumentOutOfRangeException();
         }
-
+        
         // if (Input.GetKeyDown(KeyCode.A))
         // {
         //     Score++;
@@ -108,22 +94,23 @@ public class GameManager : MonoBehaviour
         _scoreText.text = score.ToString();
     }
     
-    public float Timer
+    private float Timer
     {
-        get { return _timer; }
-        private set
+        get => _timer;
+        set
         {
             _timer = value;
             OnCountdownChanged?.Invoke(_timer);
         }
     }
     
+    // 時間がかわるたびにテキストを更新処理
     void UpdateTimerText(float timer)
     {
         _timerText.text = Mathf.CeilToInt(timer).ToString();
     }
     
-    public void TimerStop()
+    private void TimerStop()
     {
         Time.timeScale = 0;
         _stopTime = true;
@@ -142,6 +129,11 @@ public class GameManager : MonoBehaviour
         var afterScore = _playerScore[player] + value;
         _playerScore[player] += value;
         OnScoreChanged?.Invoke(player, beforeScore, afterScore);
+    }
+
+    public int GetScore(Player player)
+    {
+        return _playerScore[player];
     }
 }
 
