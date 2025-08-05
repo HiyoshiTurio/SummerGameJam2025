@@ -33,8 +33,8 @@ public class SoundManager : MonoBehaviour
 
     public void Play(SoundKey soundKey)
     {
-        _audioSources[_playBackCount].clip = audioClips[(int)soundKey];
-        _audioSources[_playBackCount].Play();
+        // _audioSources[_playBackCount].clip = audioClips[(int)soundKey];
+        _audioSources[_playBackCount].PlayOneShot(audioClips[(int)soundKey]);
         _playBackCount = (_playBackCount++) % 16;
     }
 
@@ -80,4 +80,5 @@ public enum SoundKey
     Title,
     FootStep1,
     FootStep2,
+    Dash
 }

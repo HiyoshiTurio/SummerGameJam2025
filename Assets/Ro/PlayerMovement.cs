@@ -81,6 +81,7 @@ public class PlayerMovement : MonoBehaviour
             StartDash();
             const string DashAnim = "isDashing";
             animator.SetTrigger(DashAnim);
+            SoundManager.Instance.Play(SoundKey.Dash);
             var effect =Instantiate(dashEffect, transform.position, Quaternion.identity);
             effect.gameObject.transform.forward = _moveDirection;
         }

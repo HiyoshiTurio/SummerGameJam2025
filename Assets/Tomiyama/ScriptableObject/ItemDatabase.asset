@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deliveryItems:
   - itemType: 1
-    itemPrefab: {fileID: 5472083114025529086, guid: 7f4eb6a2dab96b246b98431d8ea8dfa0, type: 3}
+    itemPrefab: {fileID: 5530041920265677978, guid: 6c36e8c3d45c13e43b9a44ef9c6a4f1a, type: 3}
+  - itemType: 2
+    itemPrefab: {fileID: 6036604995510101942, guid: 4ac2860c0eeb4154d8ae354e6ba05a4d, type: 3}

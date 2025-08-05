@@ -19,6 +19,12 @@ public class CustomerBehaviour : MonoBehaviour, ICustomer
     [SerializeField] [Range(0f, 1f)] [Tooltip("トラブルになる確率")]
     private float troubleChance = 0.1f;
     
+    [SerializeField]
+    private Material[] customerMaterials;
+    
+    [SerializeField]
+    private SkinnedMeshRenderer meshRenderer;
+    
     [SerializeField] [Tooltip("生成するアイテムのデータベース")]
     private DeliveryItemDatabase deliveryItemDatabase;
 
@@ -44,6 +50,12 @@ public class CustomerBehaviour : MonoBehaviour, ICustomer
 
     private void Start()
     {
+        if (customerMaterials.Length > 0 && meshRenderer != null)
+        {
+            // ランダムにマテリアルを設定
+            var randomIndex = Random.Range(0, customerMaterials.Length);
+            meshRenderer.material = customerMaterials[randomIndex];
+        }
         UpdateCustomerStatus(CurrentState);
     }
 
