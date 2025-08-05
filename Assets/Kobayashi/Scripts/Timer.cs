@@ -14,7 +14,6 @@ public class Timer : MonoBehaviour
     [SerializeField]private TextMeshProUGUI _timerUI;
     Result Result;
 
-    // Start is called before the first frame update
     void Start()
     {
         Result = FindObjectOfType<Result>();
@@ -61,8 +60,9 @@ public class Timer : MonoBehaviour
     }
     bool OvertimeChecker()
     {         
-        var playerOneResultScore = GameManager.Instance.GetScore(Player.One);
-        var playerTwoResultScore = GameManager.Instance.GetScore(Player.Two);
+        (int ,int) scores = GameManager.Instance.GetScore();
+        var playerOneResultScore = scores.Item1;
+        var playerTwoResultScore = scores.Item2;
         if(playerOneResultScore == playerTwoResultScore)
         {
             return true;

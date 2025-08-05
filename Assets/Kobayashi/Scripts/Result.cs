@@ -16,8 +16,9 @@ public class Result : MonoBehaviour
     /// </summary>
     public void ResultUI()
     {
-        var playerOneResultScore = GameManager.Instance.GetScore(Player.One);
-        var playerTwoResultScore = GameManager.Instance.GetScore(Player.Two);
+        (int ,int) scores = GameManager.Instance.GetScore();
+        var playerOneResultScore = scores.Item1;
+        var playerTwoResultScore = scores.Item2;
         if (playerOneResultScore > playerTwoResultScore)
         {
             //1P‚ÌŸ‚¿

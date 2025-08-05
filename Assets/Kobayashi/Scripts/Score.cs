@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
@@ -13,30 +11,22 @@ public class Score : MonoBehaviour
     public struct ScoreUIData
     {
         public Player player;
-        public TextMeshProUGUI score;
+        public TextMeshProUGUI scoreText;
     }
     
     [SerializeField]
     private ScoreUIData[] scoreUIData;
-    private Dictionary<Player, TextMeshProUGUI> _scoreUiDictionary = new();
+
+    [SerializeField] private TextMeshProUGUI[] playerScoreText = new TextMeshProUGUI[2];
  
     void Start()
     {
-        // 各プレイヤーの得点UIを初期化
-        _scoreUiDictionary = scoreUIData.ToDictionary(x => x.player, x => x.score);
-        foreach (var data in scoreUIData)
-        {
-            data.score.text = "000000"; // 初期値を設定
-        }
         GameManager.Instance.OnScoreChanged += UpdateText;
     }
-
-    /// <summary>
-    /// 得点の更新
-    /// </summary>
-    void UpdateText(Player player, int before, int after)
+    void UpdateText(Player player, int after)
     {
-        var textUI = _scoreUiDictionary[player];
+        var textUI = playerScoreText[(int)player];
+        int before = int.Parse(textUI.text);
         DOTween.To(() => before, value =>
         {   
             textUI.text = value.ToString("000000");
