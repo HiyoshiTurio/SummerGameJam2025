@@ -1,26 +1,51 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class Timer : MonoBehaviour
 {
-    [Header("カウントダウン画像"), SerializeField] private Image[] countdown;
+    [Header("カウントダウン画像"), SerializeField] private Image[] _countdown;
     [Header("制限時間"),SerializeField]private int _limit = 100;
+    [Header("リザルト"), SerializeField] private Image _result;
     [SerializeField]private TextMeshProUGUI _timerUI;
     private float _currentTime;//残り時間
+    private bool Wait;
 
     // Start is called before the first frame update
     void Start()
     {
+        _result.gameObject.SetActive(false);
+        foreach (var image in _countdown)
+        {
+            image.gameObject.SetActive(false);
+        }
+        Wait = true;
+        StartCoroutine(CountDown());
         //タイマーの初期化
-        _currentTime = _limit + 1f;
+        _currentTime = _limit;
         TimerTextUpdate();
     }
-
+    /// <summary>
+    /// カウントダウン
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator CountDown()
+    {
+        yield return new WaitForSeconds(1f);
+        for(int i = 0; i < _countdown.Length; i++)
+        {
+            _countdown[i].gameObject.SetActive(true);
+            yield return new WaitForSeconds(1f);
+            Destroy( _countdown[i].gameObject );
+        }
+        yield return new WaitForSeconds(1f);
+        Wait = false;
+    }
     // Update is called once per frame
     void Update()
     {
-        if (_currentTime > 0)
+        if (_currentTime > 0 && !Wait)
         {
             _currentTime -= Time.deltaTime;
 
@@ -40,5 +65,9 @@ public class Timer : MonoBehaviour
         int _minutes = Mathf.FloorToInt(_currentTime / 60);
         int _seconds = Mathf.FloorToInt(_currentTime % 60);
         _timerUI.text = string.Format("{0:00}:{1:00}",_minutes, _seconds);
+        if(_minutes == 0 && _seconds == 0)
+        {
+            _result.gameObject.SetActive(true);
+        }
     }
 }
