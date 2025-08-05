@@ -1,6 +1,6 @@
 using UnityEngine;
 using System;
-
+[DefaultExecutionOrder(-100)]
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private Timer timer;
@@ -9,10 +9,10 @@ public class GameManager : MonoBehaviour
     public event Action<Player, int> OnScoreChanged;
     public event Action<float> OnTimerChanged;
     private float _timer = 5;
-    private gamestate _gamestate = gamestate.Countdown;
+    private Gamestate _gamestate = Gamestate.Countdown;
 
     private PlayerScore[] _playerScores = new[] 
-        { new PlayerScore(){Player = Player.One,Score = 0}, new PlayerScore(){Player = Player.Two,Score = 0} };
+        { new PlayerScore{Player = Player.One,Score = 0}, new PlayerScore{Player = Player.Two,Score = 0} };
     public static GameManager Instance { get; private set; }
     private float Timer
     {
@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
     {
         switch (_gamestate)
         {
-            case gamestate.Countdown:
+            case Gamestate.Countdown:
             {
                 _timer -= Time.deltaTime;
                 if (_timer < 0)
@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
                 }
                 break;
             }
-            case gamestate.Ingame:
+            case Gamestate.Ingame:
             {
                 Timer -= Time.deltaTime;
                 if (Timer <= 0 && _isFinish == false)
@@ -68,11 +68,11 @@ public class GameManager : MonoBehaviour
                 }
                 break;
             }
-            case gamestate.Suddendeath:
+            case Gamestate.Suddendeath:
             {
                 break;
             }
-            case gamestate.Idle:
+            case Gamestate.Idle:
             {
                 break;
             }
@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
     
     void IngameStart()
     {
-        _gamestate = gamestate.Ingame;
+        _gamestate = Gamestate.Ingame;
         Timer = _inGameTime;
     }
     
@@ -90,19 +90,21 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
     }
 
-    public void AddScore(int value, Player player) { _playerScores[(int)player].Score += value; }
+    public void AddScore(int value, Player player)
+    {
+        _playerScores[(int)player].Score += value;
+        Debug.Log("Add Score");
+    }
 
     public (int,int) GetScore()
     {
         return (_playerScores[0].Score, _playerScores[1].Score);
     }
 }
-
 public class PlayerScore
 {
     private int _score;
     public Player Player;
-    
 
     public int Score
     {
@@ -116,14 +118,15 @@ public class PlayerScore
     public event Action<Player,int> OnScoreChanged;
 }
 
-enum gamestate
+[Serializable]
+public enum Gamestate
 {
     Countdown,
     Ingame,
     Idle,
     Suddendeath,
 }
-
+[Serializable]
 public enum Player
 {
     One,
