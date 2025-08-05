@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class CustomerBehaviour : MonoBehaviour, ICustomer
@@ -21,36 +22,72 @@ public class CustomerBehaviour : MonoBehaviour, ICustomer
     [SerializeField] [Tooltip("生成するアイテムのデータベース")]
     private DeliveryItemDatabase deliveryItemDatabase;
 
+    [SerializeField]
+    private CustomerIconDatabase customerIconDatabase;
+
+
+    [SerializeField] private Image customerImage;
+
     private GameObject _eatingItem;
-    
-    private enum CustomerState
-    {
-        Idle,
-        Eating,
-        InTrouble,
-    }
 
     private CustomerState _currentState = CustomerState.Idle;
 
+    private CustomerState CurrentState
+    {
+        get => _currentState;
+        set
+        {
+            _currentState = value;
+            UpdateCustomerStatus(_currentState);
+        }
+    }
+
+    private void Start()
+    {
+        UpdateCustomerStatus(CurrentState);
+    }
+
+    private void UpdateCustomerStatus(CustomerState customerState)
+    {
+        Debug.Log("吹き出し更新：" + customerState);
+        if (customerImage == null) return;
+        var sprite = customerIconDatabase.GetSprite(customerState);
+        customerImage.sprite = sprite;
+        customerImage.enabled = true;
+
+        switch (customerState)
+        {
+            case CustomerState.Idle:
+                if (_eatingItem != null)
+                {
+                    Destroy(_eatingItem);
+                }
+                break;
+            case CustomerState.Eating:
+                var itemPrefab = deliveryItemDatabase.GetItemPrefab(ItemType.Food);
+                if (itemPrefab != null)
+                {
+                    _eatingItem = Instantiate(itemPrefab, eatPosition.position, Quaternion.identity, eatPosition);
+                }
+                break;
+        }
+    }
+
     public bool Take(ItemType itemType)
     {
-        if (_currentState == CustomerState.Idle && itemType == ItemType.Food)
+        if (CurrentState == CustomerState.Idle && itemType == ItemType.Food)
         {
             Debug.Log("客が食べ物を受け取りました");
-            var itemPrefab = deliveryItemDatabase.GetItemPrefab(itemType);
-            if (itemPrefab != null)
-            {
-                _eatingItem = Instantiate(itemPrefab, eatPosition.position, Quaternion.identity, eatPosition);
-            }
             SoundManager.Instance.Play(SoundKey.Okawari);
             StartCoroutine(Eat());
             return true;
         }
 
-        if (_currentState == CustomerState.InTrouble && itemType == ItemType.Drink)
+        if (CurrentState == CustomerState.InTrouble && itemType == ItemType.Drink)
         {
             Debug.Log("客が飲み物を受け取りました");
-            _currentState = CustomerState.Idle;
+            Destroy(_eatingItem);
+            CurrentState = CustomerState.Idle;
             SoundManager.Instance.Play(SoundKey.PutGruss);
             return true;
         }
@@ -61,32 +98,26 @@ public class CustomerBehaviour : MonoBehaviour, ICustomer
 
     private IEnumerator Eat()
     {
-        _currentState = CustomerState.Eating;
+        CurrentState = CustomerState.Eating;
         yield return new WaitForSeconds(eatTime);
 
-        // 10%の確率でトラブルになる
+        // 確率でトラブルになる
         var r = Random.Range(0f, 1f);
-        if (r < troubleChance)
+        if (r <= troubleChance)
         {
             Debug.Log("客がトラブルになりました");
-            _currentState = CustomerState.InTrouble;
+            CurrentState = CustomerState.InTrouble;
 
             // トラブルになった場合、一定時間待機してから自動回復
             yield return new WaitForSeconds(autoRecoverTime);
-            _currentState = CustomerState.Idle;
+            CurrentState = CustomerState.Idle;
             Debug.Log("客が自動回復しました");
             yield break;
         }
 
         Debug.Log("客が食事を終えました");
-        if (_eatingItem != null)
-        {
-            Destroy(_eatingItem);
-            _eatingItem = null;
-        }
-        _currentState = CustomerState.Idle;
+        CurrentState = CustomerState.Idle;
     }
-
     private void OnDrawGizmos()
     {
         if (eatPosition == null) return;
@@ -94,4 +125,11 @@ public class CustomerBehaviour : MonoBehaviour, ICustomer
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(eatPosition.position, 0.5f);
     }
+}
+
+public enum CustomerState
+{
+    Idle,
+    Eating,
+    InTrouble,
 }

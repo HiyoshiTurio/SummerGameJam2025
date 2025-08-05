@@ -199,7 +199,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6790911154609480723}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 36118808fa30f0d4bae0dfe5cf124e4c, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -261,3 +261,5 @@ MonoBehaviour:
   turnSpeed: 720
   isPlayer1: 0
   dashKey: 259
+  dashEffect: {fileID: 0}
+  animator: {fileID: 0}

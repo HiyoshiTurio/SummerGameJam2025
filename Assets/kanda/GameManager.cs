@@ -3,17 +3,15 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private Timer timer;
     [SerializeField] private float _inGameTime = 60;
-    [SerializeField] private int _countdownTime = 3;
     public event Action<Player, int> OnScoreChanged;
     public event Action<float> OnTimerChanged;
-    private float _timer = 0;
+    private float _timer = 5;
     private gamestate _gamestate = gamestate.countdown;
 
-    private PlayerScore[] _playerScores = new[]
-    {
-        new PlayerScore(){Player = Player.One,Score = 0}, new PlayerScore(){Player = Player.Two,Score = 0}
-    };
+    private PlayerScore[] _playerScores = new[] 
+        { new PlayerScore(){Player = Player.One,Score = 0}, new PlayerScore(){Player = Player.Two,Score = 0} };
     public static GameManager Instance { get; private set; }
     private float Timer
     {
@@ -39,6 +37,8 @@ public class GameManager : MonoBehaviour
         {
             VARIABLE.OnScoreChanged += OnScoreChanged;
         }
+
+        StartCoroutine(timer.CountDown());
     }
     
     private void Update()
@@ -47,8 +47,8 @@ public class GameManager : MonoBehaviour
         {
             case gamestate.countdown:
             {
-                Timer -= Time.deltaTime;
-                if (Timer <= 0)
+                _timer -= Time.deltaTime;
+                if (_timer < 0)
                 {
                     IngameStart();
                 }
