@@ -2,10 +2,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using DG.Tweening;
 
 public class Timer : MonoBehaviour
 {
     [Header("カウントダウン画像"), SerializeField] private Image[] _countdown;
+    [Header("終了の画像"), SerializeField] private Image _finishImage;
+    [Header("終了の画像のアニメーション時間"),SerializeField] private float _delay = 4f;
     [Header("制限時間"),SerializeField]private int _limit = 100;
     [Header("リザルト"), SerializeField] private Image _result;
     [SerializeField]private TextMeshProUGUI _timerUI;
@@ -16,6 +19,7 @@ public class Timer : MonoBehaviour
     void Start()
     {
         _result.gameObject.SetActive(false);
+        _finishImage.gameObject.SetActive(false);
         foreach (var image in _countdown)
         {
             image.gameObject.SetActive(false);
@@ -67,7 +71,15 @@ public class Timer : MonoBehaviour
         _timerUI.text = string.Format("{0:00}:{1:00}",_minutes, _seconds);
         if(_minutes == 0 && _seconds == 0)
         {
-            _result.gameObject.SetActive(true);
+            StartCoroutine(FinishUI());
         }
+    }
+    IEnumerator FinishUI()
+    {
+        _finishImage.gameObject.SetActive(true);
+        _finishImage.rectTransform.DOAnchorPosX(0f, _delay);
+        yield return new WaitForSeconds(_delay + 3f);
+        _finishImage.gameObject.SetActive(false);
+        _result.gameObject.SetActive(true);
     }
 }
