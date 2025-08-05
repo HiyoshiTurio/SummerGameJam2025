@@ -14,7 +14,7 @@ public class Result : MonoBehaviour
     /// <summary>
     /// Ÿ”s‚Ì”»’fA•\¦
     /// </summary>
-    void ResultUI()
+    public void ResultUI()
     {
         var playerOneResultScore = GameManager.Instance.GetScore(Player.One);
         var playerTwoResultScore = GameManager.Instance.GetScore(Player.Two);

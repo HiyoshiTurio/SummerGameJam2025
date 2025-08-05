@@ -13,22 +13,22 @@ public class Timer : MonoBehaviour
     [Header("リザルト"), SerializeField] private Image _result;
     [SerializeField]private TextMeshProUGUI _timerUI;
     private float _currentTime;//残り時間
-    private bool Wait;
+    Result Result;
 
     // Start is called before the first frame update
     void Start()
     {
+        Result = FindObjectOfType<Result>();
+        GameManager.Instance.OnTimerChanged += TimerTextUpdate;
         _result.gameObject.SetActive(false);
         _finishImage.gameObject.SetActive(false);
         foreach (var image in _countdown)
         {
             image.gameObject.SetActive(false);
         }
-        Wait = true;
         StartCoroutine(CountDown());
         //タイマーの初期化
         _currentTime = _limit;
-        TimerTextUpdate();
     }
     /// <summary>
     /// カウントダウン
@@ -44,42 +44,45 @@ public class Timer : MonoBehaviour
             Destroy( _countdown[i].gameObject );
         }
         yield return new WaitForSeconds(1f);
-        Wait = false;
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        if (_currentTime > 0 && !Wait)
-        {
-            _currentTime -= Time.deltaTime;
-
-            if(_currentTime < 0)
-            {
-                _currentTime = 0;
-            }
-            TimerTextUpdate();
-        }
     }
 
     /// <summary>
     /// タイマーの更新
     /// </summary>
-    void TimerTextUpdate()
+    void TimerTextUpdate(float time)
     {
         int _minutes = Mathf.FloorToInt(_currentTime / 60);
         int _seconds = Mathf.FloorToInt(_currentTime % 60);
         _timerUI.text = string.Format("{0:00}:{1:00}",_minutes, _seconds);
-        if(_minutes == 0 && _seconds == 0)
+        if(time <= 0)
         {
-            StartCoroutine(FinishUI());
+            if (!OvertimeChecker())
+            {
+                StartCoroutine(FinishUI());
+            }
         }
     }
+    bool OvertimeChecker()
+    {         
+        var playerOneResultScore = GameManager.Instance.GetScore(Player.One);
+        var playerTwoResultScore = GameManager.Instance.GetScore(Player.Two);
+        if(playerOneResultScore == playerTwoResultScore)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    /// <summary>
+    /// 終了の表示、アニメーション
+    /// </summary>
+    /// <returns></returns>
     IEnumerator FinishUI()
     {
         _finishImage.gameObject.SetActive(true);
         _finishImage.rectTransform.DOAnchorPosX(0f, _delay);
         yield return new WaitForSeconds(_delay + 3f);
         _finishImage.gameObject.SetActive(false);
-        _result.gameObject.SetActive(true);
+        Result.ResultUI();
     }
 }
