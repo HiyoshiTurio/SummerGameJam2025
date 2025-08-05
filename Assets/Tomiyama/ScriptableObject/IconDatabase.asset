@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateIcons:
   - state: 0
-    sprite: {fileID: 21300000, guid: 5c6feec36ea23fb4f8fe7226588a0992, type: 3}
+    sprite: {fileID: 21300000, guid: 6e6f31952c6ca0f48b3734b228a6743d, type: 3}
   - state: 1
-    sprite: {fileID: 21300000, guid: c9aaad699c0062b4e8da79eb155a6a64, type: 3}
+    sprite: {fileID: 0}
   - state: 2
-    sprite: {fileID: 21300000, guid: 8435eb2f77c605b48858665e52b9e0ed, type: 3}
+    sprite: {fileID: 21300000, guid: de6b279fd0836784eb54e24e06bf24a0, type: 3}

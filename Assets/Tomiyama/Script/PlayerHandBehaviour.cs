@@ -65,9 +65,9 @@ public class PlayerHandBehaviour : MonoBehaviour
                 }
             }
 
+            if (_currentItem != ItemType.None) return;
             if (target.TryGetComponent(out IGenerator foodGenerator) && foodGenerator.TryTakeItem(out var itemType))
             {
-                if (_holdingObject != null) return;
                 _currentItem = itemType;
                 var itemPrefab = deliveryItemDatabase.GetItemPrefab(itemType);
                 _holdingObject = Instantiate(itemPrefab, playerHand.position, transform.rotation, playerHand);

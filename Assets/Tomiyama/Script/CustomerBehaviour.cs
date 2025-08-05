@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -30,7 +28,6 @@ public class CustomerBehaviour : MonoBehaviour, ICustomer
 
     [SerializeField]
     private CustomerIconDatabase customerIconDatabase;
-
 
     [SerializeField] private Image customerImage;
 
@@ -76,6 +73,8 @@ public class CustomerBehaviour : MonoBehaviour, ICustomer
                 }
                 break;
             case CustomerState.Eating:
+                
+                customerImage.enabled = false;
                 var itemPrefab = deliveryItemDatabase.GetItemPrefab(ItemType.Food);
                 if (itemPrefab != null)
                 {

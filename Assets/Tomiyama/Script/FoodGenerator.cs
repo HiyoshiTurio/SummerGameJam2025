@@ -1,5 +1,7 @@
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FoodGenerator : MonoBehaviour, IGenerator
 {
@@ -14,6 +16,9 @@ public class FoodGenerator : MonoBehaviour, IGenerator
 
     [SerializeField] [Tooltip("生成するアイテムのデータベース")]
     private DeliveryItemDatabase deliveryItemDatabase;
+    
+    [SerializeField]
+    private Image reloadImage;
 
     private bool _hasFood;
 
@@ -33,7 +38,9 @@ public class FoodGenerator : MonoBehaviour, IGenerator
         yield return new WaitUntil(() => !_hasFood);
 
         // スロットが開いたら一定時間待機してから生成
+        reloadImage.enabled = true;
         yield return new WaitForSeconds(reloadTime);
+        reloadImage.enabled = false;
         Debug.Log("アイテムが生成されました");
         SoundManager.Instance.Play(SoundKey.RestockSoba);
         itemSpawnPoint.gameObject.SetActive(true);
