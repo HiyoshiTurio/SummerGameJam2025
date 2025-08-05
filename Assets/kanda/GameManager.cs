@@ -2,25 +2,32 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private float _gameTimer;
-    [SerializeField] private int _countdownTimer = 60;
+    [SerializeField] private int _countdownTimer = 3;
     [SerializeField] private Text _scoreText;
     [SerializeField] private Text _timerText;
     public event Action<Player, int, int> OnScoreChanged;
-    public event Action<float> OnCountdownChanged;
+    public event Action<float> OnTimerChanged;
     private float _countdownBuffer = 0f;
-    public bool _stopTime;
     //private int _score = 0;// 他のクラスから取得
-    private float _timer = 3;
+    private float _timer = 0;
     private gamestate _gamestate = gamestate.countdown;
     private Dictionary<Player,int> _playerScore = new();
     
-    public float GameTime => _gameTimer;
-    
     public static GameManager Instance { get; private set; }
+    private float Timer
+    {
+        get => _timer;
+        set
+        {
+            _timer = value;
+            OnTimerChanged?.Invoke(_timer);
+        }
+    }
 
     private void Awake()
     {
@@ -32,9 +39,6 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        // OnScoreChanged += UpdateScoreText;
-        OnCountdownChanged += UpdateTimerText;
-        _stopTime = true;
         _playerScore[Player.One]  = 0;
         _playerScore[Player.Two] = 0;
     }
@@ -48,7 +52,7 @@ public class GameManager : MonoBehaviour
                 Timer -= Time.deltaTime;
                 if (Timer <= 0)
                 {
-                    ingameStart();
+                    IngameStart();
                 }
                 break;
             }
@@ -66,60 +70,27 @@ public class GameManager : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        
-        // if (Input.GetKeyDown(KeyCode.A))
-        // {
-        //     Score++;
-        // }
     }
     
-    void ingameStart()
+    void IngameStart()
     {
         _gamestate = gamestate.ingame;
         Timer = 60;
     }
-    
-    // public int Score
-    // {
-    //     get => _score;
-    //     private set
-    //     {
-    //         _score = value;
-    //         OnScoreChanged?.Invoke(_score);
-    //     }
-    // }
     
     void UpdateScoreText(int score)
     {
         _scoreText.text = score.ToString();
     }
     
-    private float Timer
-    {
-        get => _timer;
-        set
-        {
-            _timer = value;
-            OnCountdownChanged?.Invoke(_timer);
-        }
-    }
-    
-    // 時間がかわるたびにテキストを更新処理
-    void UpdateTimerText(float timer)
-    {
-        _timerText.text = Mathf.CeilToInt(timer).ToString();
-    }
-    
     private void TimerStop()
     {
         Time.timeScale = 0;
-        _stopTime = true;
     }
     
     public void TimeResume()
     {
         Time.timeScale = 0;
-        _stopTime = true;
     }
 
     public void AddScore(int value, Player player)
@@ -141,6 +112,7 @@ enum gamestate
 {
     countdown,
     ingame,
+    
 }
 
 public enum Player
