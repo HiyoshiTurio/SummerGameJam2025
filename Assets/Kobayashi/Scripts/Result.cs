@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class Result : MonoBehaviour
 {
-    [Header("1P‚ÌŸ—˜‰æ‘œ"),SerializeField] private Image _1PwinImage;
+    [Header("1P‚ÌŸ—˜‰æ‘œ"), SerializeField] private Image _1PwinImage;
     [Header("2P‚ÌŸ—˜‰æ‘œ"), SerializeField] private Image _2PwinImage;
 
     private void Start()
@@ -16,10 +16,11 @@ public class Result : MonoBehaviour
     /// </summary>
     public void ResultUI()
     {
+        Debug.Log("Result");
         (int ,int) scores = GameManager.Instance.GetScore();
         var playerOneResultScore = scores.Item1;
         var playerTwoResultScore = scores.Item2;
-        if (playerOneResultScore > playerTwoResultScore)
+        if (playerOneResultScore >= playerTwoResultScore)
         {
             //1P‚ÌŸ‚¿
             _1PwinImage.gameObject.SetActive(true);

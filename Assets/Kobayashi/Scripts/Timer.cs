@@ -14,12 +14,12 @@ public class Timer : MonoBehaviour
     [Header("制限時間"),SerializeField]private int _limit = 100;
     [Header("リザルト"), SerializeField] private Image _result;
     [SerializeField] private TextMeshProUGUI _timerUI;
-    Result Result;
+    [SerializeField] Result result;
     private bool _overtime;
 
     void Start()
     {
-        Result = FindObjectOfType<Result>();
+        // result = FindObjectOfType<Result>();
         GameManager.Instance.OnTimerChanged += TimerTextUpdate;
         _result.gameObject.SetActive(false);
         _finishImage.gameObject.SetActive(false);
@@ -46,7 +46,7 @@ public class Timer : MonoBehaviour
             Destroy( _countdown[i].gameObject );
         }
         _startImage.gameObject.SetActive(true);
-        _startImage.rectTransform.DOAnchorPosX(-1500f, 5f);
+        _startImage.rectTransform.DOAnchorPosX(-2000f, 5f);
         yield return new WaitForSeconds(5f);
         _startImage.gameObject.SetActive(false);
     }
@@ -59,21 +59,16 @@ public class Timer : MonoBehaviour
         int _minutes = Mathf.FloorToInt(time / 60);
         int _seconds = Mathf.FloorToInt(time % 60);
         _timerUI.text = string.Format("{0:00}:{1:00}",_minutes, _seconds);
-        if(time <= 0)
-        {
-            if (!OvertimeChecker())
-            {
-                StartCoroutine(FinishUI());
-            }
-            else
-            {
-                if (_overtime)
-                {
-                    StartCoroutine(OvertimeUI());
-                    _overtime = false;
-                }
-            }
-        }
+    }
+
+    public void FinishUIA()
+    {
+        result.ResultUI();
+    }
+    public IEnumerator OnFInish()
+    {
+        yield return new WaitForSeconds(1f);
+        Debug.Log("Hoge");
     }
     /// <summary>
     /// サドンデスを延長するか判断する
@@ -126,6 +121,6 @@ public class Timer : MonoBehaviour
         _timerUI.gameObject.SetActive(false);
 
         //リザルト画面の表示
-        Result.ResultUI();
+        result.ResultUI();
     }
 }

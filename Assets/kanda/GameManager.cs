@@ -5,10 +5,11 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private Timer timer;
     [SerializeField] private float _inGameTime = 60;
+    private bool _isFinish = false;
     public event Action<Player, int> OnScoreChanged;
     public event Action<float> OnTimerChanged;
     private float _timer = 5;
-    private gamestate _gamestate = gamestate.countdown;
+    private gamestate _gamestate = gamestate.Countdown;
 
     private PlayerScore[] _playerScores = new[] 
         { new PlayerScore(){Player = Player.One,Score = 0}, new PlayerScore(){Player = Player.Two,Score = 0} };
@@ -22,7 +23,6 @@ public class GameManager : MonoBehaviour
             OnTimerChanged?.Invoke(_timer);
         }
     }
-
     private void Awake()
     {
         if (Instance == null)
@@ -33,19 +33,20 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        foreach (var VARIABLE in _playerScores)
+        foreach (var variable in _playerScores)
         {
-            VARIABLE.OnScoreChanged += OnScoreChanged;
+            variable.OnScoreChanged += OnScoreChanged;
         }
 
         StartCoroutine(timer.CountDown());
+        SoundManager.Instance.PlayBgm();
     }
     
     private void Update()
     {
         switch (_gamestate)
         {
-            case gamestate.countdown:
+            case gamestate.Countdown:
             {
                 _timer -= Time.deltaTime;
                 if (_timer < 0)
@@ -54,14 +55,25 @@ public class GameManager : MonoBehaviour
                 }
                 break;
             }
-            case gamestate.ingame:
+            case gamestate.Ingame:
             {
                 Timer -= Time.deltaTime;
-                if (Timer <= 0)
+                if (Timer <= 0 && _isFinish == false)
                 {
                     Timer = 0;
                     TimerStop();
+                    SoundManager.Instance.StopBgm();
+                    _isFinish = true;
+                    timer.FinishUIA();
                 }
+                break;
+            }
+            case gamestate.Suddendeath:
+            {
+                break;
+            }
+            case gamestate.Idle:
+            {
                 break;
             }
         }
@@ -69,8 +81,8 @@ public class GameManager : MonoBehaviour
     
     void IngameStart()
     {
-        _gamestate = gamestate.ingame;
-        Timer = 60;
+        _gamestate = gamestate.Ingame;
+        Timer = _inGameTime;
     }
     
     private void TimerStop()
@@ -106,8 +118,10 @@ public class PlayerScore
 
 enum gamestate
 {
-    countdown,
-    ingame,
+    Countdown,
+    Ingame,
+    Idle,
+    Suddendeath,
 }
 
 public enum Player

@@ -31,8 +31,8 @@ public class Score : MonoBehaviour
         {   
             textUI.text = value.ToString("000000");
         }, after, 1f).SetEase(Ease.OutExpo);
-        var defaultScale = textUI.transform.localScale;
-        textUI.transform.localScale = defaultScale * 1.2f;
-        textUI.transform.DOScale(defaultScale, 0.2f);
+        // var defaultScale = textUI.transform.localScale;
+        // textUI.transform.localScale = defaultScale * 1.2f;
+        // textUI.transform.DOScale(defaultScale, 0.2f);
     }
 }
