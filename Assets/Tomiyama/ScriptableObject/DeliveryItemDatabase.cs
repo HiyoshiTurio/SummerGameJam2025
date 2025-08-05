@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "DeliveryItemDatabase", menuName = "ScriptableObjects/DeliveryItemDatabase", order = 1)]
-public class DeliveryItemDatabase : ScriptableObject
+public class DeliveryItemDatabase : MonoBehaviour
 {
     [Serializable]
     public struct DeliveryItem
@@ -19,7 +18,7 @@ public class DeliveryItemDatabase : ScriptableObject
     private DeliveryItem[] deliveryItems;
     private readonly Dictionary<ItemType, GameObject> _itemDictionary = new();
 
-    private void OnValidate()
+    private void Awake()
     {
         _itemDictionary.Clear();
         foreach (var item in deliveryItems)

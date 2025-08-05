@@ -6,6 +6,8 @@ public class SoundManager : MonoBehaviour
     private static SoundManager _instance;
     public static SoundManager Instance => _instance;
     
+    [SerializeField] AudioSource bgmSource;
+    
     public List<AudioClip> audioClips;
     private AudioSource[] _audioSources = new AudioSource[16];
     public AudioClip bgmAudioClip;
@@ -15,9 +17,9 @@ public class SoundManager : MonoBehaviour
 
     private void Awake()
     {
+        DontDestroyOnLoad(this);
         if (_instance == null) _instance = this;
         else Destroy(this);
-        DontDestroyOnLoad(this);
     }
 
     private void Start()
@@ -34,19 +36,19 @@ public class SoundManager : MonoBehaviour
     public void Play(SoundKey soundKey)
     {
         // _audioSources[_playBackCount].clip = audioClips[(int)soundKey];
-        _audioSources[_playBackCount].PlayOneShot(audioClips[(int)soundKey]);
+        _audioSources[0].PlayOneShot(audioClips[(int)soundKey]);
         _playBackCount = (_playBackCount++) % 16;
     }
 
     public void PlayBgm()
     {
-        _bgmAudioSource.clip = bgmAudioClip;
-        _bgmAudioSource.loop = true;
-        _bgmAudioSource.Play();
+        // _bgmAudioSource.clip = bgmAudioClip;
+        // _bgmAudioSource.loop = true;
+        // _bgmAudioSource.Play(); 
     }
     public void StopBgm()
     {
-        _bgmAudioSource.Stop();
+        bgmSource.Stop();
     }
 
     public void PlayDrumRoll()

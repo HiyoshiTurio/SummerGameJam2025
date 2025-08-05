@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CustomerIconDatabase", menuName = "ScriptableObjects/CustomerIconDatabase", order = 1)]
-public class CustomerIconDatabase : ScriptableObject
+public class CustomerIconDatabase : MonoBehaviour
 {
     [Serializable]
     public struct StateIconPair
@@ -16,7 +15,7 @@ public class CustomerIconDatabase : ScriptableObject
 
     private readonly Dictionary<CustomerState, Sprite> _dict = new();
 
-    private void OnValidate()
+    private void Awake()
     {
         _dict.Clear();
         foreach (var pair in stateIcons)
