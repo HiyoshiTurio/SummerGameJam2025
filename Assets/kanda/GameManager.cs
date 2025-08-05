@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,13 +10,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int _countdownTimer = 60;
     [SerializeField] private Text _scoreText;
     [SerializeField] private Text _timerText;
-    public event Action<int> OnScoreChanged;
+    public event Action<Player, int, int> OnScoreChanged;
     public event Action<float> OnCountdownChanged;
     private float _countdownBuffer = 0f;
     public bool _stopTime;
-    private int _score = 0;// 他のクラスから取得
+    //private int _score = 0;// 他のクラスから取得
     private float _timer = 3;
     private gamestate _gamestate = gamestate.countdown;
+    private Dictionary<Player,int> _playerScore = new Dictionary<Player, int>();
     
     public float GameTime => _gameTimer;
     
@@ -31,6 +33,7 @@ public class GameManager : MonoBehaviour
         }
     }
     
+    
     private void Awake()
     {
         if (_instance == null)
@@ -45,30 +48,15 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
-        OnScoreChanged += UpdateScoreText;
+        // OnScoreChanged += UpdateScoreText;
         OnCountdownChanged += UpdateTimerText;
         _stopTime = true;
+        _playerScore[Player.One]  = 0;
+        _playerScore[Player.Two] = 0;
     }
     
     private void Update()
     {
-        // if (!_stopTime)
-        // {
-        //     _countdownBuffer += Time.deltaTime;
-        //
-        //     if (_countdownBuffer >= 1f)
-        //     {
-        //         _countdownBuffer = 0f;
-        //
-        //         Timer--;
-        //
-        //         if (_countdownTimer <= 0)
-        //         {
-        //             TimerStop();
-        //         }
-        //     }
-        // }
-
         switch (_gamestate)
         {
             case gamestate.countdown:
@@ -85,34 +73,35 @@ public class GameManager : MonoBehaviour
                 Timer -= Time.deltaTime;
                 if (Timer <= 0)
                 {
-                    Debug.Log("Finish Game");
+                    Timer = 0;
+                    TimerStop();
+                    Debug.Log("Finish Game");// シーン遷移先に書き替える
                 }
                 break;
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            Score++;
-        }
+        // if (Input.GetKeyDown(KeyCode.A))
+        // {
+        //     Score++;
+        // }
     }
-
+    
     void ingameStart()
     {
         _gamestate = gamestate.ingame;
         Timer = 60;
-        
     }
     
-    public int Score
-    {
-        get { return _score; }
-        private set
-        {
-            if (OnScoreChanged != null) OnScoreChanged(value);
-            _score = value;
-        }
-    }
+    // public int Score
+    // {
+    //     get => _score;
+    //     private set
+    //     {
+    //         _score = value;
+    //         OnScoreChanged?.Invoke(_score);
+    //     }
+    // }
     
     void UpdateScoreText(int score)
     {
@@ -131,7 +120,7 @@ public class GameManager : MonoBehaviour
     
     void UpdateTimerText(float timer)
     {
-        _timerText.text = timer.ToString();
+        _timerText.text = Mathf.CeilToInt(timer).ToString();
     }
     
     public void TimerStop()
@@ -142,8 +131,17 @@ public class GameManager : MonoBehaviour
     
     public void TimeResume()
     {
-        Time.timeScale = 1;
-        _stopTime = false;
+        Time.timeScale = 0;
+        _stopTime = true;
+    }
+
+    public void AddScore(int value, Player player)
+    {
+        //Score += value;
+        var beforeScore = _playerScore[player];
+        var afterScore = _playerScore[player] + value;
+        _playerScore[player] += value;
+        OnScoreChanged?.Invoke(player, beforeScore, afterScore);
     }
 }
 
@@ -151,4 +149,10 @@ enum gamestate
 {
     countdown,
     ingame,
+}
+
+public enum Player
+{
+    One,
+    Two,
 }
