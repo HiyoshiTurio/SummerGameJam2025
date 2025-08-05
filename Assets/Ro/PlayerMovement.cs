@@ -126,19 +126,19 @@ public class PlayerMovement : MonoBehaviour
     private void MoveCharacter()
     {
         var speed = moveSpeed;
-
         if (_moveDirection == Vector3.zero && !_isDashing)
         {
-            _rb.velocity = Vector3.zero; 
+            _rb.velocity = Vector3.zero; // 停止時は速度をゼロにする
             return;
         }
 
         if (_isDashing)
         {
-            var t = _dashElapsed / dashDuration;
+            var t = _dashElapsed / dashDuration;             
             speed = dashSpeed * Mathf.Sin((1f - t) * Mathf.PI * 0.5f);
+            Debug.Log($"{speed}");
         }
 
-        _rb.velocity = _moveDirection * speed;
+        _rb.MovePosition(_rb.position + _moveDirection * (speed * Time.fixedDeltaTime));
     }
 }
