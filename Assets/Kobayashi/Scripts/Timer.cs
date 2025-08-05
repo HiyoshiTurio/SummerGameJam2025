@@ -12,7 +12,6 @@ public class Timer : MonoBehaviour
     [Header("制限時間"),SerializeField]private int _limit = 100;
     [Header("リザルト"), SerializeField] private Image _result;
     [SerializeField]private TextMeshProUGUI _timerUI;
-    private float _currentTime;//残り時間
     Result Result;
 
     // Start is called before the first frame update
@@ -27,8 +26,6 @@ public class Timer : MonoBehaviour
             image.gameObject.SetActive(false);
         }
         StartCoroutine(CountDown());
-        //タイマーの初期化
-        _currentTime = _limit;
     }
     /// <summary>
     /// カウントダウン
@@ -51,8 +48,8 @@ public class Timer : MonoBehaviour
     /// </summary>
     void TimerTextUpdate(float time)
     {
-        int _minutes = Mathf.FloorToInt(_currentTime / 60);
-        int _seconds = Mathf.FloorToInt(_currentTime % 60);
+        int _minutes = Mathf.FloorToInt(time / 60);
+        int _seconds = Mathf.FloorToInt(time % 60);
         _timerUI.text = string.Format("{0:00}:{1:00}",_minutes, _seconds);
         if(time <= 0)
         {
