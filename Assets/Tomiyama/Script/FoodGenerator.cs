@@ -34,7 +34,8 @@ public class FoodGenerator : MonoBehaviour, IGenerator
 
         // スロットが開いたら一定時間待機してから生成
         yield return new WaitForSeconds(reloadTime);
-        Debug.Log("Food generated");
+        Debug.Log("アイテムが生成されました");
+        SoundManager.Instance.Play(SoundKey.RestockSoba);
         itemSpawnPoint.gameObject.SetActive(true);
         _hasFood = true;
     }

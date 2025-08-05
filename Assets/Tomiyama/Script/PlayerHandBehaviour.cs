@@ -4,7 +4,7 @@ public class PlayerHandBehaviour : MonoBehaviour
 {
     [SerializeField] [Tooltip("プレイヤーの手のTransform")]
     private Transform playerHand;
-    
+
     [SerializeField] [Tooltip("SphereCastでヒット判定を行うレイヤー")]
     private LayerMask interactiveLayer;
 
@@ -13,10 +13,16 @@ public class PlayerHandBehaviour : MonoBehaviour
 
     [SerializeField] [Tooltip("SphereCastの半径")]
     private float sphereRadius;
-    
+
     [SerializeField] [Tooltip("生成するアイテムのデータベース")]
     private DeliveryItemDatabase deliveryItemDatabase;
-    
+
+    [SerializeField] [Tooltip("アイテムを渡したときのスコア")]
+    private int scorePerItem = 100;
+
+    [SerializeField] [Tooltip("トラブルを解決したときのスコア")]
+    private int scorePerTrouble = 50;
+
     [SerializeField]
     private Player player;
 
@@ -49,7 +55,8 @@ public class PlayerHandBehaviour : MonoBehaviour
             if (target.TryGetComponent(out ICustomer customer) && customer.Take(_currentItem))
             {
                 Debug.Log("アイテムを渡しました: " + _currentItem);
-                GameManager.Instance.AddScore(100, player);
+                GameManager.Instance.AddScore(_currentItem == ItemType.Drink ? scorePerTrouble : scorePerItem, player);
+                SoundManager.Instance.Play(SoundKey.ScoreUp);
                 _currentItem = ItemType.None;
                 if (_holdingObject != null)
                 {
@@ -60,6 +67,7 @@ public class PlayerHandBehaviour : MonoBehaviour
 
             if (target.TryGetComponent(out IGenerator foodGenerator) && foodGenerator.TryTakeItem(out var itemType))
             {
+                if (_holdingObject != null) return;
                 _currentItem = itemType;
                 var itemPrefab = deliveryItemDatabase.GetItemPrefab(itemType);
                 _holdingObject = Instantiate(itemPrefab, playerHand.position, transform.rotation, playerHand);
@@ -80,12 +88,13 @@ public class PlayerHandBehaviour : MonoBehaviour
         var distance = Vector3.Distance(origin, playerHand.position);
 
         // ヒットした場合、色を変更する
-        Gizmos.color = Physics.SphereCast(origin, sphereRadius, direction, out _, distance, interactiveLayer) ? Color.blue : Color.red;
-        
+        Gizmos.color = Physics.SphereCast(origin, sphereRadius, direction, out _, distance, interactiveLayer)
+            ? Color.blue
+            : Color.red;
+
         Gizmos.DrawWireSphere(origin, sphereRadius);
         Gizmos.DrawRay(origin, direction * distance);
         Gizmos.DrawWireSphere(origin + direction * distance, sphereRadius);
-        
     }
 
     private static bool IsInLayerMask(int layer, LayerMask layerMask) => (layerMask.value & (1 << layer)) != 0;
