@@ -11,7 +11,7 @@ public class Timer : MonoBehaviour
     [Header("終了の画像のアニメーション時間"),SerializeField] private float _delay = 4f;
     [Header("制限時間"),SerializeField]private int _limit = 100;
     [Header("リザルト"), SerializeField] private Image _result;
-    [SerializeField]private TextMeshProUGUI _timerUI;
+    [SerializeField] private TextMeshProUGUI _timerUI;
     Result Result;
 
     void Start()
@@ -30,7 +30,7 @@ public class Timer : MonoBehaviour
     /// カウントダウン
     /// </summary>
     /// <returns></returns>
-    IEnumerator CountDown()
+    public IEnumerator CountDown()
     {
         yield return new WaitForSeconds(1f);
         for(int i = 0; i < _countdown.Length; i++)
@@ -59,7 +59,7 @@ public class Timer : MonoBehaviour
         }
     }
     bool OvertimeChecker()
-    {         
+    {
         (int ,int) scores = GameManager.Instance.GetScore();
         var playerOneResultScore = scores.Item1;
         var playerTwoResultScore = scores.Item2;
