@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool isPlayer1 = true;
     [SerializeField] private KeyCode dashKey = KeyCode.LeftShift;
     [SerializeField] private ParticleSystem dashEffect;
+    [SerializeField] private Animator animator;
 
     private Rigidbody _rb;
     private bool _isDashing;
@@ -39,8 +40,11 @@ public class PlayerMovement : MonoBehaviour
     /// プレイヤーの移動方向を取得
     private void HandleMovementInput()
     {
+        const string WalkBool = "isWalking";
         var h = isPlayer1 ? Input.GetAxisRaw("Horizontal") : Input.GetAxisRaw("Horizontal2");
         var v = isPlayer1 ? Input.GetAxisRaw("Vertical") : Input.GetAxisRaw("Vertical2");
+
+        animator.SetBool(WalkBool, h != 0 || v != 0);
 
         _moveDirection = new Vector3(h, 0f, v).normalized;
     }
@@ -75,6 +79,8 @@ public class PlayerMovement : MonoBehaviour
         {
             Debug.Log("Dash");
             StartDash();
+            const string DashAnim = "isDashing";
+            animator.SetTrigger(DashAnim);
             var effect =Instantiate(dashEffect, transform.position, Quaternion.identity);
             effect.gameObject.transform.forward = _moveDirection;
         }
